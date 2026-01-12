@@ -1,5 +1,6 @@
 package org.example;
 
+import io.qameta.allure.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -13,6 +14,8 @@ import static org.hamcrest.Matchers.*;
 /**
  * Простые автотесты для API используя RestAssured
  */
+@Epic("API Testing")
+@Feature("REST API Tests")
 public class ApiTests {
 
     private static final String BASE_URI = "http://85.192.34.140:8080";
@@ -25,6 +28,9 @@ public class ApiTests {
 
     @Test
     @DisplayName("Проверка доступности API (health check)")
+    @Story("Health Check")
+    @Description("Проверка доступности API через health check endpoint")
+    @Severity(SeverityLevel.BLOCKER)
     public void testHealthCheck() {
         given()
             .when()
@@ -36,6 +42,9 @@ public class ApiTests {
 
     @Test
     @DisplayName("Получение списка пользователей (GET)")
+    @Story("User Management")
+    @Description("Получение списка всех пользователей через GET запрос")
+    @Severity(SeverityLevel.CRITICAL)
     public void testGetUsers() {
         given()
             .contentType(ContentType.JSON)
@@ -63,6 +72,9 @@ public class ApiTests {
 
     @Test
     @DisplayName("Создание нового пользователя (POST)")
+    @Story("User Management")
+    @Description("Создание нового пользователя через POST запрос")
+    @Severity(SeverityLevel.CRITICAL)
     public void testCreateUser() {
         String requestBody = """
             {

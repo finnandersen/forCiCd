@@ -1,89 +1,57 @@
 plugins {
     id 'java'
+    id 'io.qameta.allure' version '2.12.0'
+    id 'io.qameta.allure-adapter' version '2.12.0'
+}
+ext {
+    allureVersion = '2.29.0'
 }
 
 group = 'org.example'
 version = '1.0-SNAPSHOT'
 
-// Версия Allure
-def allureVersion = "2.25.0"
-// Версия AspectJ для поддержки аннотаций
-def aspectJVersion = "1.9.21"
-
 repositories {
     mavenCentral()
 }
 
-// Конфигурация для AspectJ agent
-configurations {
-    agent {
-        canBeResolved = true
-        canBeConsumed = true
-    }
-}
 
 dependencies {
     // JUnit 5
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    
+
     // RestAssured
     testImplementation 'io.rest-assured:rest-assured:5.4.0'
     testImplementation 'io.rest-assured:json-path:5.4.0'
     testImplementation 'io.rest-assured:xml-path:5.4.0'
-    testImplementation 'org.hamcrest:hamcrest:2.2'
-    
-    // Allure
-    testImplementation platform("io.qameta.allure:allure-bom:$allureVersion")
-    testImplementation "io.qameta.allure:allure-junit5"
-    
-    // AspectJ для поддержки аннотаций @Step, @Attachment
-    agent "org.aspectj:aspectjweaver:$aspectJVersion"
-}
+
+    testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
+    testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
+
+        // Selenide для UI тестов
+        testImplementation "com.codeborne:selenide:7.0.4"
+
+    }
 
 // Настройка компилятора для сохранения имен параметров
-tasks.withType(JavaCompile) {
-    options.compilerArgs.add("-parameters")
-}
-
-test {
-    useJUnitPlatform()
-    
-    // Добавляем AspectJ agent для поддержки Allure аннотаций
-    jvmArgs = [ "-javaagent:${configurations.agent.singleFile}" ]
-    
-    // Настройка для генерации Allure результатов
-    systemProperty 'allure.results.directory', 'build/allure-results'
-    
-    // Показываем вывод тестов
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
+    tasks.withType(JavaCompile) {
+        options.compilerArgs.add("-parameters")
     }
-}
 
-// Задача для генерации Allure отчета
-task allureReport(type: Exec) {
-    dependsOn test
-    group = 'reporting'
-    description = 'Generate Allure report'
-    
-    commandLine = ['allure', 'generate', 'build/allure-results', '-o', 'build/allure-report', '--clean']
-    
-    doFirst {
-        println 'Generating Allure report...'
+    allure {
+        version.set("${allureVersion}")
+        adapter {
+            aspectjVersion.set("1.9.22")
+            aspectjWeaver.set(true)
+        }
     }
-    
-    doLast {
-        println 'Allure report generated in: build/allure-report/index.html'
-    }
-}
 
-// Задача для открытия Allure отчета в браузере
-task allureServe(type: Exec) {
-    dependsOn test
-    group = 'reporting'
-    description = 'Serve Allure report'
-    
-    commandLine = ['allure', 'serve', 'build/allure-results']
+    test {
+        useJUnitPlatform()
+        // Показываем вывод тестов
+        testLogging {
+            events "passed", "skipped", "failed"
+            exceptionFormat "full"
+        }
+    }
 }
