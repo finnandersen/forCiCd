@@ -1,6 +1,7 @@
 package org.example.ui;
 
 import io.qameta.allure.*;
+import org.example.steps.BaseStep;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,7 @@ public class DemoQATests extends BaseUITest {
         
         // Проверяем наличие карточек с элементами
         $(".card").shouldBe(visible);
-        
+
         // Проверяем наличие нескольких карточек
         assertTrue($$(".card").size() >= 5, "Должно быть минимум 5 карточек");
     }

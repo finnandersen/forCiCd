@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.*;
@@ -12,6 +13,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * Тесты с аутентификацией (примеры для различных типов авторизации)
  */
+@Tag("API_AUTH_TEST")
 public class ApiTestWithAuth {
 
     private static final String BASE_URI = "http://85.192.34.140:8080";

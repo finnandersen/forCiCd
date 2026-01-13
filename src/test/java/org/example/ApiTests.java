@@ -4,6 +4,7 @@ import io.qameta.allure.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.example.steps.BaseStep;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,8 @@ public class ApiTests {
             .then()
                 .statusCode(anyOf(is(200), is(401), is(404)))
                 .log().all();
+        new BaseStep().step();
+
     }
 
     @Test
