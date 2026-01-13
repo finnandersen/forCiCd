@@ -48,7 +48,10 @@ dependencies {
 
     test {
         useJUnitPlatform()
-        // Показываем вывод тестов
+
+        if (System.getProperty("tags")) {
+            includeTags System.getProperty("tags")
+        }
         testLogging {
             events "passed", "skipped", "failed"
             exceptionFormat "full"
