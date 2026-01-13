@@ -3,6 +3,7 @@ plugins {
     id 'io.qameta.allure' version '2.12.0'
     id 'io.qameta.allure-adapter' version '2.12.0'
 }
+
 ext {
     allureVersion = '2.29.0'
 }
@@ -14,47 +15,50 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     // JUnit 5
     testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+
     testImplementation 'org.aspectj:aspectjweaver:1.9.24'
+
     // RestAssured
     testImplementation 'io.rest-assured:rest-assured:5.4.0'
     testImplementation 'io.rest-assured:json-path:5.4.0'
     testImplementation 'io.rest-assured:xml-path:5.4.0'
 
+    // Allure
     testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
-    testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
+    testImplementation "io.qameta.allure:allure-junit5:${allureVersion}"
 
-        // Selenide для UI тестов
-        testImplementation "com.codeborne:selenide:7.0.4"
+    // Selenide
+    testImplementation "com.codeborne:selenide:7.0.4"
+}
 
+// 🔹 Компилятор
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add("-parameters")
+}
+
+// 🔹 Allure plugin config
+allure {
+    version.set(allureVersion)
+    adapter {
+        aspectjVersion.set("1.9.22")
+        aspectjWeaver.set(true)
     }
+}
 
-// Настройка компилятора для сохранения имен параметров
-    tasks.withType(JavaCompile) {
-        options.compilerArgs.add("-parameters")
-    }
-
-    allure {
-        version.set("${allureVersion}")
-        adapter {
-            aspectjVersion.set("1.9.22")
-            aspectjWeaver.set(true)
-        }
-    }
-
-    test {
-        useJUnitPlatform()
-
+// 🔹 JUnit 5 + TAGS (ВАЖНО!)
+test {
+    useJUnitPlatform {
         if (System.getProperty("tags")) {
-            includeTags System.getProperty("tags")
+            includeTags System.getProperty("tags").split(',')
         }
-        testLogging {
-            events "passed", "skipped", "failed"
-            exceptionFormat "full"
-        }
+    }
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
     }
 }
